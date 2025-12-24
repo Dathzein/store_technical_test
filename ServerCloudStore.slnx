@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="ServerCloudStore.API/ServerCloudStore.API.csproj" />
+  <Project Path="ServerCloudStore.Application/ServerCloudStore.Application.csproj" />
+  <Project Path="ServerCloudStore.Domain/ServerCloudStore.Domain.csproj" />
+  <Project Path="ServerCloudStore.Infrastructure/ServerCloudStore.Infrastructure.csproj" />
+  <Project Path="ServerCloudStore.Tests.Integration/ServerCloudStore.Tests.Integration.csproj" />
+  <Project Path="ServerCloudStore.Tests.Unit/ServerCloudStore.Tests.Unit.csproj" />
+  <Project Path="ServerCloudStore.Transversal/ServerCloudStore.Transversal.csproj" />
+</Solution>

@@ -1,0 +1,37 @@
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy csproj files and restore dependencies
+COPY ["ServerCloudStore.API/ServerCloudStore.API.csproj", "ServerCloudStore.API/"]
+COPY ["ServerCloudStore.Application/ServerCloudStore.Application.csproj", "ServerCloudStore.Application/"]
+COPY ["ServerCloudStore.Domain/ServerCloudStore.Domain.csproj", "ServerCloudStore.Domain/"]
+COPY ["ServerCloudStore.Infrastructure/ServerCloudStore.Infrastructure.csproj", "ServerCloudStore.Infrastructure/"]
+COPY ["ServerCloudStore.Transversal/ServerCloudStore.Transversal.csproj", "ServerCloudStore.Transversal/"]
+
+RUN dotnet restore "ServerCloudStore.API/ServerCloudStore.API.csproj"
+
+# Copy everything else and build
+COPY . .
+WORKDIR "/src/ServerCloudStore.API"
+RUN dotnet build "ServerCloudStore.API.csproj" -c Release -o /app/build
+
+# Publish stage
+FROM build AS publish
+RUN dotnet publish "ServerCloudStore.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+# Copy published files
+COPY --from=publish /app/publish .
+
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+ENTRYPOINT ["dotnet", "ServerCloudStore.API.dll"]
+
