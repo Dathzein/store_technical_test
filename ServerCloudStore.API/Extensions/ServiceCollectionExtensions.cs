@@ -79,6 +79,9 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
+        // Registrar AutoMapper
+        services.AddAutoMapperConfiguration();
+
         // Registrar servicios de Infrastructure
         services.AddInfrastructure(configuration);
 

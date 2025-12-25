@@ -1,6 +1,7 @@
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using ServerCloudStore.Application.DTOs.Category;
-using ServerCloudStore.Application.Mappers;
+using ServerCloudStore.Domain.Entities;
 using ServerCloudStore.Domain.Repositories;
 using ServerCloudStore.Transversal.Common;
 
@@ -13,22 +14,27 @@ public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly ILogger<CategoryService> _logger;
+    private readonly IMapper _mapper;
 
-    public CategoryService(ICategoryRepository categoryRepository, ILogger<CategoryService> logger)
+    public CategoryService(
+        ICategoryRepository categoryRepository, 
+        ILogger<CategoryService> logger,
+        IMapper mapper)
     {
         _categoryRepository = categoryRepository;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<Response<CategoryDto>> CreateAsync(CreateCategoryDto dto)
     {
         try
         {
-            var category = CategoryMapper.ToDomain(dto);
+            var category = _mapper.Map<Category>(dto);
             var id = await _categoryRepository.CreateAsync(category);
             category.Id = id;
 
-            var result = CategoryMapper.ToDto(category);
+            var result = _mapper.Map<CategoryDto>(category);
             return Response<CategoryDto>.Success(result, "Categoría creada exitosamente", 201);
         }
         catch (Exception ex)
@@ -43,7 +49,7 @@ public class CategoryService : ICategoryService
         try
         {
             var categories = await _categoryRepository.GetAllAsync();
-            var result = CategoryMapper.ToDtoList(categories);
+            var result = _mapper.Map<List<CategoryDto>>(categories);
             return Response<List<CategoryDto>>.Success(result, "Categorías obtenidas exitosamente", 200);
         }
         catch (Exception ex)
@@ -64,7 +70,7 @@ public class CategoryService : ICategoryService
                 return Response<CategoryDto>.Error("Categoría no encontrada", 404);
             }
 
-            var result = CategoryMapper.ToDto(category);
+            var result = _mapper.Map<CategoryDto>(category);
             return Response<CategoryDto>.Success(result, "Categoría obtenida exitosamente", 200);
         }
         catch (Exception ex)
@@ -85,7 +91,7 @@ public class CategoryService : ICategoryService
                 return Response<CategoryDto>.Error("Categoría no encontrada", 404);
             }
 
-            CategoryMapper.UpdateDomain(category, dto);
+            _mapper.Map(dto, category);
             var updated = await _categoryRepository.UpdateAsync(category);
 
             if (!updated)
@@ -93,7 +99,7 @@ public class CategoryService : ICategoryService
                 return Response<CategoryDto>.Error("Error al actualizar la categoría", 500);
             }
 
-            var result = CategoryMapper.ToDto(category);
+            var result = _mapper.Map<CategoryDto>(category);
             return Response<CategoryDto>.Success(result, "Categoría actualizada exitosamente", 200);
         }
         catch (Exception ex)

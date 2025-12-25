@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { productService } from '../services/productService';
 import { categoryService } from '../services/categoryService';
 import type { CreateProductDto, UpdateProductDto, CategoryDto, ProductDto } from '../types';
-import './ProductForm.css';
 
 export const ProductForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -133,15 +132,23 @@ export const ProductForm: React.FC = () => {
   };
 
   return (
-    <div className="product-form-container">
-      <div className="form-card">
-        <h1>{isEditMode ? 'Editar Producto' : 'Nuevo Producto'}</h1>
+    <div className="p-8 max-w-4xl mx-auto">
+      <div className="bg-white p-8 rounded-xl shadow-md">
+        <h1 className="text-gray-900 text-3xl font-bold mb-6">
+          {isEditMode ? 'Editar Producto' : 'Nuevo Producto'}
+        </h1>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-md mb-4 border border-red-200">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Nombre *</label>
+          <div className="mb-6">
+            <label htmlFor="name" className="block mb-2 text-gray-700 font-medium">
+              Nombre *
+            </label>
             <input
               type="text"
               id="name"
@@ -149,13 +156,19 @@ export const ProductForm: React.FC = () => {
               value={formData.name}
               onChange={handleChange}
               disabled={loading}
-              className={errors.name ? 'input-error' : ''}
+              className={`w-full px-3 py-3 border rounded-md text-base transition-colors focus:outline-none ${
+                errors.name ? 'border-red-500' : 'border-gray-300 focus:border-[#667eea]'
+              } disabled:bg-gray-100 disabled:cursor-not-allowed`}
             />
-            {errors.name && <span className="error-text">{errors.name}</span>}
+            {errors.name && (
+              <span className="block text-red-500 text-sm mt-1">{errors.name}</span>
+            )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="description">Descripción *</label>
+          <div className="mb-6">
+            <label htmlFor="description" className="block mb-2 text-gray-700 font-medium">
+              Descripción *
+            </label>
             <textarea
               id="description"
               name="description"
@@ -163,14 +176,20 @@ export const ProductForm: React.FC = () => {
               onChange={handleChange}
               disabled={loading}
               rows={4}
-              className={errors.description ? 'input-error' : ''}
+              className={`w-full px-3 py-3 border rounded-md text-base transition-colors focus:outline-none font-inherit ${
+                errors.description ? 'border-red-500' : 'border-gray-300 focus:border-[#667eea]'
+              } disabled:bg-gray-100 disabled:cursor-not-allowed`}
             />
-            {errors.description && <span className="error-text">{errors.description}</span>}
+            {errors.description && (
+              <span className="block text-red-500 text-sm mt-1">{errors.description}</span>
+            )}
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="price">Precio *</label>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <label htmlFor="price" className="block mb-2 text-gray-700 font-medium">
+                Precio *
+              </label>
               <input
                 type="number"
                 id="price"
@@ -180,13 +199,19 @@ export const ProductForm: React.FC = () => {
                 disabled={loading}
                 step="0.01"
                 min="0"
-                className={errors.price ? 'input-error' : ''}
+                className={`w-full px-3 py-3 border rounded-md text-base transition-colors focus:outline-none ${
+                  errors.price ? 'border-red-500' : 'border-gray-300 focus:border-[#667eea]'
+                } disabled:bg-gray-100 disabled:cursor-not-allowed`}
               />
-              {errors.price && <span className="error-text">{errors.price}</span>}
+              {errors.price && (
+                <span className="block text-red-500 text-sm mt-1">{errors.price}</span>
+              )}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="stock">Stock *</label>
+            <div>
+              <label htmlFor="stock" className="block mb-2 text-gray-700 font-medium">
+                Stock *
+              </label>
               <input
                 type="number"
                 id="stock"
@@ -195,21 +220,29 @@ export const ProductForm: React.FC = () => {
                 onChange={handleChange}
                 disabled={loading}
                 min="0"
-                className={errors.stock ? 'input-error' : ''}
+                className={`w-full px-3 py-3 border rounded-md text-base transition-colors focus:outline-none ${
+                  errors.stock ? 'border-red-500' : 'border-gray-300 focus:border-[#667eea]'
+                } disabled:bg-gray-100 disabled:cursor-not-allowed`}
               />
-              {errors.stock && <span className="error-text">{errors.stock}</span>}
+              {errors.stock && (
+                <span className="block text-red-500 text-sm mt-1">{errors.stock}</span>
+              )}
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="categoryId">Categoría *</label>
+          <div className="mb-6">
+            <label htmlFor="categoryId" className="block mb-2 text-gray-700 font-medium">
+              Categoría *
+            </label>
             <select
               id="categoryId"
               name="categoryId"
               value={formData.categoryId}
               onChange={handleChange}
               disabled={loading}
-              className={errors.categoryId ? 'input-error' : ''}
+              className={`w-full px-3 py-3 border rounded-md text-base transition-colors focus:outline-none ${
+                errors.categoryId ? 'border-red-500' : 'border-gray-300 focus:border-[#667eea]'
+              } disabled:bg-gray-100 disabled:cursor-not-allowed`}
             >
               <option value="0">Seleccionar categoría...</option>
               {categories.map((cat) => (
@@ -218,14 +251,25 @@ export const ProductForm: React.FC = () => {
                 </option>
               ))}
             </select>
-            {errors.categoryId && <span className="error-text">{errors.categoryId}</span>}
+            {errors.categoryId && (
+              <span className="block text-red-500 text-sm mt-1">{errors.categoryId}</span>
+            )}
           </div>
 
-          <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={() => navigate('/products')} disabled={loading}>
+          <div className="flex gap-4 justify-end mt-8">
+            <button 
+              type="button" 
+              className="px-6 py-3 bg-gray-600 text-white border-none rounded-md text-base font-semibold cursor-pointer transition-colors hover:bg-gray-700 disabled:opacity-60 disabled:cursor-not-allowed"
+              onClick={() => navigate('/products')} 
+              disabled={loading}
+            >
               Cancelar
             </button>
-            <button type="submit" className="btn-primary" disabled={loading}>
+            <button 
+              type="submit" 
+              className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-none rounded-md text-base font-semibold cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+              disabled={loading}
+            >
               {loading ? 'Guardando...' : isEditMode ? 'Actualizar' : 'Crear'}
             </button>
           </div>
@@ -234,4 +278,3 @@ export const ProductForm: React.FC = () => {
     </div>
   );
 };
-

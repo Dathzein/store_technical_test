@@ -1,6 +1,6 @@
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using ServerCloudStore.Application.DTOs.BulkImport;
-using ServerCloudStore.Application.Mappers;
 using ServerCloudStore.Domain.Entities;
 using ServerCloudStore.Domain.Repositories;
 using ServerCloudStore.Domain.Services;
@@ -20,6 +20,7 @@ public class BulkImportService : IBulkImportService
     private readonly ICsvProcessor _csvProcessor;
     private readonly IDataGenerator _dataGenerator;
     private readonly ILogger<BulkImportService> _logger;
+    private readonly IMapper _mapper;
 
     public BulkImportService(
         IBulkImportJobRepository jobRepository,
@@ -28,7 +29,8 @@ public class BulkImportService : IBulkImportService
         INotificationService notificationService,
         ICsvProcessor csvProcessor,
         IDataGenerator dataGenerator,
-        ILogger<BulkImportService> logger)
+        ILogger<BulkImportService> logger,
+        IMapper mapper)
     {
         _jobRepository = jobRepository;
         _productRepository = productRepository;
@@ -37,6 +39,7 @@ public class BulkImportService : IBulkImportService
         _csvProcessor = csvProcessor;
         _dataGenerator = dataGenerator;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<Response<BulkImportJobDto>> StartImportAsync(BulkImportRequestDto request)
@@ -58,7 +61,7 @@ public class BulkImportService : IBulkImportService
             // Iniciar procesamiento en background (fire and forget)
             _ = Task.Run(async () => await ProcessImportAsync(job, request));
 
-            var result = BulkImportMapper.ToDto(job);
+            var result = _mapper.Map<BulkImportJobDto>(job);
             return Response<BulkImportJobDto>.Success(result, "Importación iniciada", 202);
         }
         catch (Exception ex)
@@ -79,7 +82,7 @@ public class BulkImportService : IBulkImportService
                 return Response<BulkImportJobDto>.Error("Trabajo de importación no encontrado", 404);
             }
 
-            var result = BulkImportMapper.ToDto(job);
+            var result = _mapper.Map<BulkImportJobDto>(job);
             return Response<BulkImportJobDto>.Success(result, "Estado obtenido exitosamente", 200);
         }
         catch (Exception ex)
@@ -94,7 +97,7 @@ public class BulkImportService : IBulkImportService
         try
         {
             var jobs = await _jobRepository.GetAllAsync();
-            var result = jobs.Select(BulkImportMapper.ToDto).ToList();
+            var result = _mapper.Map<List<BulkImportJobDto>>(jobs);
             return Response<List<BulkImportJobDto>>.Success(result, "Trabajos obtenidos exitosamente", 200);
         }
         catch (Exception ex)
@@ -228,7 +231,7 @@ public class BulkImportService : IBulkImportService
     /// </summary>
     private async Task NotifyProgressAsync(BulkImportJob job)
     {
-        var statusDto = BulkImportMapper.ToStatusDto(job);
+        var statusDto = _mapper.Map<BulkImportStatusDto>(job);
         await _notificationService.SendImportProgressAsync(job.Id, statusDto);
     }
 }

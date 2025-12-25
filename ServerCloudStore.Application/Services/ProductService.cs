@@ -1,7 +1,8 @@
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using ServerCloudStore.Application.DTOs.Common;
 using ServerCloudStore.Application.DTOs.Product;
-using ServerCloudStore.Application.Mappers;
+using ServerCloudStore.Domain.Entities;
 using ServerCloudStore.Domain.Repositories;
 using ServerCloudStore.Transversal.Common;
 
@@ -15,15 +16,18 @@ public class ProductService : IProductService
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly ILogger<ProductService> _logger;
+    private readonly IMapper _mapper;
 
     public ProductService(
         IProductRepository productRepository,
         ICategoryRepository categoryRepository,
-        ILogger<ProductService> logger)
+        ILogger<ProductService> logger,
+        IMapper mapper)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<Response<ProductDto>> CreateAsync(CreateProductDto dto)
@@ -37,14 +41,14 @@ public class ProductService : IProductService
                 return Response<ProductDto>.Error("La categoría especificada no existe", 400);
             }
 
-            var product = ProductMapper.ToDomain(dto);
+            var product = _mapper.Map<Product>(dto);
             var id = await _productRepository.CreateAsync(product);
             product.Id = id;
 
             // Cargar categoría para el DTO
             product.Category = category;
 
-            var result = ProductMapper.ToDto(product);
+            var result = _mapper.Map<ProductDto>(product);
             return Response<ProductDto>.Success(result, "Producto creado exitosamente", 201);
         }
         catch (Exception ex)
@@ -75,7 +79,7 @@ public class ProductService : IProductService
                 sortBy,
                 sortOrder);
 
-            var items = ProductMapper.ToListDtoList(products);
+            var items = _mapper.Map<List<ProductListDto>>(products);
 
             var result = new PagedResultDto<ProductListDto>
             {
@@ -105,7 +109,7 @@ public class ProductService : IProductService
                 return Response<ProductDto>.Error("Producto no encontrado", 404);
             }
 
-            var result = ProductMapper.ToDto(product);
+            var result = _mapper.Map<ProductDto>(product);
             return Response<ProductDto>.Success(result, "Producto obtenido exitosamente", 200);
         }
         catch (Exception ex)
@@ -133,7 +137,7 @@ public class ProductService : IProductService
                 return Response<ProductDto>.Error("La categoría especificada no existe", 400);
             }
 
-            ProductMapper.UpdateDomain(product, dto);
+            _mapper.Map(dto, product);
             var updated = await _productRepository.UpdateAsync(product);
 
             if (!updated)
@@ -142,7 +146,7 @@ public class ProductService : IProductService
             }
 
             product.Category = category;
-            var result = ProductMapper.ToDto(product);
+            var result = _mapper.Map<ProductDto>(product);
             return Response<ProductDto>.Success(result, "Producto actualizado exitosamente", 200);
         }
         catch (Exception ex)

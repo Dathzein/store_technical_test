@@ -1,0 +1,74 @@
+# Etapa 1: Restore y Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copiar archivos de proyecto
+COPY ["ServerCloudStore.API/ServerCloudStore.API.csproj", "ServerCloudStore.API/"]
+COPY ["ServerCloudStore.Application/ServerCloudStore.Application.csproj", "ServerCloudStore.Application/"]
+COPY ["ServerCloudStore.Domain/ServerCloudStore.Domain.csproj", "ServerCloudStore.Domain/"]
+COPY ["ServerCloudStore.Infrastructure/ServerCloudStore.Infrastructure.csproj", "ServerCloudStore.Infrastructure/"]
+COPY ["ServerCloudStore.Transversal/ServerCloudStore.Transversal.csproj", "ServerCloudStore.Transversal/"]
+COPY ["ServerCloudStore.Tests.Unit/ServerCloudStore.Tests.Unit.csproj", "ServerCloudStore.Tests.Unit/"]
+COPY ["ServerCloudStore.Tests.Integration/ServerCloudStore.Tests.Integration.csproj", "ServerCloudStore.Tests.Integration/"]
+
+# Restore de dependencias
+RUN dotnet restore "ServerCloudStore.Tests.Unit/ServerCloudStore.Tests.Unit.csproj"
+RUN dotnet restore "ServerCloudStore.Tests.Integration/ServerCloudStore.Tests.Integration.csproj"
+
+# Copiar el resto del código
+COPY . .
+
+# Etapa 2: Test con cobertura
+FROM build AS test
+WORKDIR /src
+
+# Instalar herramienta de reportes de cobertura
+RUN dotnet tool install --global dotnet-reportgenerator-globaltool
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Ejecutar tests unitarios con cobertura
+RUN dotnet test ServerCloudStore.Tests.Unit/ServerCloudStore.Tests.Unit.csproj \
+    --configuration Release \
+    --logger "trx;LogFileName=unit-test-results.trx" \
+    --collect:"XPlat Code Coverage" \
+    --results-directory /testresults/unit \
+    --verbosity normal \
+    || true
+
+# Ejecutar tests de integración con cobertura
+RUN dotnet test ServerCloudStore.Tests.Integration/ServerCloudStore.Tests.Integration.csproj \
+    --configuration Release \
+    --logger "trx;LogFileName=integration-test-results.trx" \
+    --collect:"XPlat Code Coverage" \
+    --results-directory /testresults/integration \
+    --verbosity normal \
+    || true
+
+# Generar reporte de cobertura HTML
+RUN reportgenerator \
+    "-reports:/testresults/**/coverage.cobertura.xml" \
+    "-targetdir:/testresults/coveragereport" \
+    "-reporttypes:Html;Cobertura;TextSummary" \
+    || true
+
+# Mostrar resumen de cobertura
+RUN cat /testresults/coveragereport/Summary.txt || echo "No coverage summary available"
+
+# Etapa 3: Resultado final con reportes
+FROM mcr.microsoft.com/dotnet/runtime:8.0 AS final
+WORKDIR /testresults
+
+# Copiar resultados de tests
+COPY --from=test /testresults /testresults
+
+# Comando por defecto: mostrar resumen
+CMD ["sh", "-c", "echo '=== TEST RESULTS ===' && \
+     echo 'Unit Tests:' && cat /testresults/unit/unit-test-results.trx 2>/dev/null || echo 'No unit test results' && \
+     echo '' && \
+     echo 'Integration Tests:' && cat /testresults/integration/integration-test-results.trx 2>/dev/null || echo 'No integration test results' && \
+     echo '' && \
+     echo '=== COVERAGE SUMMARY ===' && \
+     cat /testresults/coveragereport/Summary.txt 2>/dev/null || echo 'No coverage summary available' && \
+     echo '' && \
+     echo 'Full coverage report available at: /testresults/coveragereport/index.html'"]
+

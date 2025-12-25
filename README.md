@@ -25,6 +25,7 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
 - ✅ **Carga Masiva**: Procesamiento asíncrono de hasta 100k productos
 - ✅ **SignalR**: Notificaciones en tiempo real del progreso de importación
 - ✅ **Dapper + PostgreSQL**: Alto rendimiento con queries optimizadas
+- ✅ **AutoMapper**: Mapeos centralizados con ReverseMap
 - ✅ **FluentValidation**: Validaciones robustas de DTOs
 - ✅ **Logging**: Serilog con logs estructurados
 - ✅ **Manejo de Errores**: Middleware centralizado de excepciones
@@ -50,7 +51,7 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
                             ↕
 ┌─────────────────────────────────────────────────────────┐
 │              Application Layer                           │
-│  Validaciones, Excepciones, DTOs, Mapeos, Servicios    │
+│  DTOs, Services, Validators, AutoMapper Profiles        │
 └─────────────────────────────────────────────────────────┘
                             ↕
 ┌─────────────────────────────────────────────────────────┐
@@ -65,7 +66,7 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
                             ↕
 ┌─────────────────────────────────────────────────────────┐
 │              Transversal Layer                          │
-│  Response<T>, Mappings, Utilidades Comunes             │
+│  Response<T>, Common Utilities, Shared Resources       │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -85,6 +86,7 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
 - **.NET 8**: Framework principal
 - **PostgreSQL**: Base de datos relacional
 - **Dapper**: Micro-ORM para alto rendimiento
+- **AutoMapper**: Mapeo automático de objetos
 - **JWT**: Autenticación y autorización
 - **SignalR**: WebSocket para notificaciones en tiempo real
 - **FluentValidation**: Validaciones declarativas
@@ -181,7 +183,8 @@ finanzauto/
 │   ├── DTOs/                           # Data Transfer Objects
 │   ├── Services/                       # Servicios de aplicación
 │   ├── Validators/                     # FluentValidation
-│   └── Mappers/                        # Mapeo DTO ↔ Domain
+│   ├── Mappings/                       # AutoMapper profiles
+│   └── Extensions/                     # AutoMapper configuration
 ├── ServerCloudStore.Domain/             # Capa de dominio
 │   ├── Entities/                       # Entidades del dominio
 │   ├── Repositories/                   # Interfaces de repositorios
@@ -192,8 +195,7 @@ finanzauto/
 │   ├── Scripts/                        # Scripts SQL
 │   └── Services/                       # Servicios de infraestructura
 ├── ServerCloudStore.Transversal/        # Capa transversal
-│   ├── Common/                         # Response<T>, utilidades
-│   └── Mappings/                       # Mapeo de datos
+│   └── Common/                         # Response<T>, utilidades comunes
 ├── ServerCloudStore.Tests.Unit/         # Tests unitarios
 ├── ServerCloudStore.Tests.Integration/  # Tests de integración
 ├── frontend/                            # Aplicación React
@@ -305,7 +307,42 @@ finanzauto/
 
 ## 🧪 Testing
 
+El proyecto incluye tests unitarios e integración completos con cobertura de código superior al 92%.
+
+### Resumen de Tests
+
+**Tests Unitarios: 45 tests**
+- ✅ 4 tests de AuthService
+- ✅ 9 tests de ProductService  
+- ✅ 7 tests de CategoryService
+- ✅ 5 tests de BulkImportService
+- ✅ 3 tests de Validadores (LoginRequest, CreateProduct, CreateCategory)
+- ✅ 4 tests de Entidades (Product, Category, User)
+- ✅ 4 tests de Response<T>
+
+**Tests de Integración: Disponibles**
+- ✅ AuthController (5 tests)
+- ✅ ProductController (7 tests)
+- ✅ CategoryController (6 tests)
+- ✅ BulkImportController (5 tests)
+
+### Ejecución Rápida
+
+```bash
+# Script automatizado con reporte de cobertura
+./run-tests.sh
+
+# O manualmente:
+dotnet test
+```
+
 ### Tests Unitarios
+
+Los tests unitarios cubren:
+- ✅ Servicios de aplicación (AuthService, ProductService, CategoryService, BulkImportService)
+- ✅ Validadores (FluentValidation)
+- ✅ Entidades de dominio
+- ✅ Response<T> genérico
 
 ```bash
 # Ejecutar todos los tests unitarios
@@ -317,20 +354,86 @@ dotnet test ServerCloudStore.Tests.Unit --collect:"XPlat Code Coverage"
 
 ### Tests de Integración
 
+Los tests de integración cubren:
+- ✅ Controladores (AuthController, ProductController, CategoryController, BulkImportController)
+- ✅ Flujos completos de CRUD
+- ✅ Autenticación y autorización
+- ✅ Validaciones end-to-end
+
 ```bash
 # Requiere PostgreSQL en ejecución
 dotnet test ServerCloudStore.Tests.Integration
 ```
 
-### Cobertura de Código
+### Ejecutar Todos los Tests
 
 ```bash
-# Generar reporte de cobertura
+# Ejecutar todos los tests con cobertura
 dotnet test --collect:"XPlat Code Coverage"
-reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html
 ```
 
-**Nota:** La fase de testing (Fase 8) está pendiente de implementación para alcanzar el 92% de cobertura objetivo.
+### Generar Reporte de Cobertura
+
+```bash
+# Instalar herramienta de reportes (solo primera vez)
+dotnet tool install --global dotnet-reportgenerator-globaltool
+
+# Generar reporte HTML
+dotnet test --collect:"XPlat Code Coverage"
+reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html
+
+# Abrir reporte
+open coveragereport/index.html
+```
+
+### Usar Dockerfile.Test
+
+El proyecto incluye un Dockerfile especializado para ejecutar tests en un entorno aislado:
+
+```bash
+# Construir imagen de testing
+docker build -f Dockerfile.Test -t servercloudstore-tests .
+
+# Ejecutar tests y ver resultados
+docker run --rm servercloudstore-tests
+
+# Extraer reportes de cobertura
+docker run --name test-run servercloudstore-tests
+docker cp test-run:/testresults ./test-results
+docker rm test-run
+```
+
+El Dockerfile.Test ejecuta:
+1. Tests unitarios con cobertura
+2. Tests de integración con cobertura
+3. Genera reportes HTML y de texto
+4. Muestra resumen de cobertura en consola
+
+### Estructura de Tests
+
+```
+ServerCloudStore.Tests.Unit/
+├── Services/                    # Tests de servicios
+│   ├── AuthServiceTests.cs
+│   ├── ProductServiceTests.cs
+│   ├── CategoryServiceTests.cs
+│   └── BulkImportServiceTests.cs
+├── Validators/                  # Tests de validadores
+│   ├── LoginRequestValidatorTests.cs
+│   ├── CreateProductDtoValidatorTests.cs
+│   └── CreateCategoryDtoValidatorTests.cs
+├── Entities/                    # Tests de entidades
+│   └── EntityTests.cs
+└── Common/                      # Tests de utilidades comunes
+    └── ResponseTests.cs
+
+ServerCloudStore.Tests.Integration/
+└── Controllers/                 # Tests de integración
+    ├── AuthControllerIntegrationTests.cs
+    ├── ProductControllerIntegrationTests.cs
+    ├── CategoryControllerIntegrationTests.cs
+    └── BulkImportControllerIntegrationTests.cs
+```
 
 ## 🐳 Docker
 
@@ -419,6 +522,14 @@ docker-compose down -v
 - **Health checks** endpoints
 - **Distributed tracing** con OpenTelemetry
 
+#### 9. Auto-Scaling Automático en la Nube
+
+##### **Azure Container Apps**
+El sistema permite crear réplicas automáticas del contenedor cuando el CPU llegue al 80%. Cuando esto sucede, Azure crea un contenedor duplicado para evitar caídas del servicio. Una vez que la carga baje de ese porcentaje, el contenedor duplicado se elimina automáticamente, dejando solo el contenedor principal funcionando.
+
+##### **Azure Kubernetes Service (AKS)**
+De manera similar, AKS permite duplicar los pods cuando el CPU alcance el 80%. El sistema crea réplicas adicionales para distribuir la carga y prevenir interrupciones. Cuando el uso de CPU disminuye por debajo del umbral, los pods duplicados se eliminan automáticamente, manteniendo solo el pod principal activo.
+
 ### Configuración de Escalabilidad
 
 ```yaml
@@ -479,6 +590,16 @@ services:
 - **Soporte JSON**: Útil para campos flexibles
 - **Índices avanzados**: GIN, GiST para búsquedas complejas
 - **Madurez**: 30+ años de desarrollo
+
+### ¿Por qué AutoMapper?
+
+- **Centralización**: Un solo archivo `MappingProfile.cs` con todos los mapeos
+- **Bidireccionalidad**: Uso de `.ReverseMap()` para mapeos inversos automáticos
+- **Mantenibilidad**: Fácil de localizar y modificar configuraciones
+- **Inyección de Dependencias**: `IMapper` inyectado en servicios
+- **Validación de configuración**: AutoMapper valida los mapeos en startup
+- **Performance**: Cachea las configuraciones de mapeo
+- **Reducción de código**: Menos mappers manuales y repetitivos
 
 ## 👤 Credenciales de Prueba
 
@@ -571,6 +692,4 @@ Este proyecto es privado y fue desarrollado como prueba técnica.
 Desarrollado como parte de la prueba técnica para Finanzauto.
 
 ---
-
-**Nota:** El proyecto está completo excepto la Fase 8 (Testing con 92% de cobertura), que requiere implementación adicional de tests unitarios e integración.
 

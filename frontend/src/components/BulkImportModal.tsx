@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { bulkImportService } from '../services/bulkImportService';
 import type { BulkImportStatusDto } from '../types';
-import './BulkImportModal.css';
 
 interface BulkImportModalProps {
   onClose: () => void;
@@ -113,46 +112,78 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onCom
     return progress.percentage || 0;
   };
 
+  const getStatusColor = (status?: string) => {
+    switch (status?.toLowerCase()) {
+      case 'pending':
+        return 'bg-yellow-400 text-gray-900';
+      case 'processing':
+        return 'bg-cyan-500 text-white';
+      case 'completed':
+        return 'bg-green-500 text-white';
+      case 'failed':
+        return 'bg-red-500 text-white';
+      default:
+        return 'bg-gray-500 text-white';
+    }
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Carga Masiva de Productos</h2>
-          <button className="btn-close" onClick={onClose}>
+    <div 
+      className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-xl w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-t-xl">
+          <h2 className="text-2xl font-bold m-0">Carga Masiva de Productos</h2>
+          <button 
+            className="bg-transparent border-none text-3xl text-white cursor-pointer leading-none p-0 w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-white/20"
+            onClick={onClose}
+          >
             ×
           </button>
         </div>
 
-        <div className="modal-body">
+        <div className="p-8">
           {!isImporting ? (
             <>
-              <div className="import-type-selector">
-                <label className={importType === 'generate' ? 'active' : ''}>
+              <div className="flex gap-4 mb-8">
+                <label className={`flex-1 p-4 border-2 rounded-lg cursor-pointer transition-all flex items-center gap-2 ${
+                  importType === 'generate' ? 'border-[#667eea] bg-blue-50' : 'border-gray-300 hover:border-[#667eea] hover:bg-gray-50'
+                }`}>
                   <input
                     type="radio"
                     name="importType"
                     value="generate"
                     checked={importType === 'generate'}
                     onChange={() => setImportType('generate')}
+                    className="m-0"
                   />
                   <span>Generar productos aleatorios</span>
                 </label>
 
-                <label className={importType === 'csv' ? 'active' : ''}>
+                <label className={`flex-1 p-4 border-2 rounded-lg cursor-pointer transition-all flex items-center gap-2 ${
+                  importType === 'csv' ? 'border-[#667eea] bg-blue-50' : 'border-gray-300 hover:border-[#667eea] hover:bg-gray-50'
+                }`}>
                   <input
                     type="radio"
                     name="importType"
                     value="csv"
                     checked={importType === 'csv'}
                     onChange={() => setImportType('csv')}
+                    className="m-0"
                   />
                   <span>Subir archivo CSV</span>
                 </label>
               </div>
 
               {importType === 'generate' ? (
-                <div className="form-group">
-                  <label htmlFor="generateCount">Cantidad de productos a generar:</label>
+                <div className="mb-6">
+                  <label htmlFor="generateCount" className="block mb-2 text-gray-700 font-medium">
+                    Cantidad de productos a generar:
+                  </label>
                   <input
                     type="number"
                     id="generateCount"
@@ -160,20 +191,33 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onCom
                     onChange={(e) => setGenerateCount(parseInt(e.target.value) || 0)}
                     min="1"
                     max="1000000"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-base"
                   />
                 </div>
               ) : (
-                <div className="form-group">
-                  <label htmlFor="csvFile">Archivo CSV:</label>
-                  <input type="file" id="csvFile" accept=".csv" onChange={handleFileChange} />
-                  {file && <p className="file-name">Archivo seleccionado: {file.name}</p>}
+                <div className="mb-6">
+                  <label htmlFor="csvFile" className="block mb-2 text-gray-700 font-medium">
+                    Archivo CSV:
+                  </label>
+                  <input 
+                    type="file" 
+                    id="csvFile" 
+                    accept=".csv" 
+                    onChange={handleFileChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-base"
+                  />
+                  {file && <p className="mt-2 text-gray-600 text-sm">Archivo seleccionado: {file.name}</p>}
                 </div>
               )}
 
-              {error && <div className="error-message">{error}</div>}
+              {error && (
+                <div className="bg-red-50 text-red-700 px-4 py-3 rounded-md mb-4 border border-red-200">
+                  {error}
+                </div>
+              )}
 
               <button
-                className="btn-primary btn-full"
+                className="w-full px-6 py-3 border-none rounded-md text-base font-semibold cursor-pointer transition-all bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={handleStartImport}
                 disabled={importType === 'csv' && !file}
               >
@@ -181,34 +225,39 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onCom
               </button>
             </>
           ) : (
-            <div className="progress-container">
-              <div className="progress-info">
-                <h3>{progress?.message || 'Procesando...'}</h3>
-                <p>
+            <div className="text-center">
+              <div className="mb-6">
+                <h3 className="text-gray-900 mb-2">{progress?.message || 'Procesando...'}</h3>
+                <p className="text-gray-600 mb-6">
                   {progress?.processedRecords || 0} de {progress?.totalRecords || 0} productos procesados
                 </p>
               </div>
 
-              <div className="progress-bar-container">
-                <div className="progress-bar" style={{ width: `${getProgressPercentage()}%` }}>
-                  <span className="progress-text">{getProgressPercentage().toFixed(1)}%</span>
+              <div className="w-full h-10 bg-gray-200 rounded-full overflow-hidden mb-4 relative">
+                <div 
+                  className="h-full bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 flex items-center justify-center relative"
+                  style={{ width: `${getProgressPercentage()}%` }}
+                >
+                  <span className="text-white font-semibold text-base absolute left-1/2 -translate-x-1/2" style={{ left: '50%', transform: 'translateX(-50%)' }}>
+                    {getProgressPercentage().toFixed(1)}%
+                  </span>
                 </div>
               </div>
 
-              <div className="progress-status">
-                <span className={`status-badge status-${progress?.status.toLowerCase()}`}>
+              <div className="mt-4">
+                <span className={`inline-block px-4 py-2 rounded-full font-semibold text-sm ${getStatusColor(progress?.status)}`}>
                   {progress?.status || 'Processing'}
                 </span>
               </div>
 
               {progress?.status === 'Completed' && (
-                <div className="success-message">
+                <div className="mt-4 p-4 bg-green-100 text-green-800 border border-green-300 rounded-md font-medium">
                   ✅ Importación completada exitosamente!
                 </div>
               )}
 
               {progress?.status === 'Failed' && (
-                <div className="error-message">
+                <div className="mt-4 p-4 bg-red-50 text-red-700 border border-red-200 rounded-md">
                   ❌ Error en la importación: {progress.message}
                 </div>
               )}
@@ -216,8 +265,12 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onCom
           )}
         </div>
 
-        <div className="modal-footer">
-          <button className="btn-secondary" onClick={onClose} disabled={isImporting && progress?.status === 'Processing'}>
+        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end">
+          <button 
+            className="px-6 py-3 bg-gray-600 text-white border-none rounded-md text-base font-semibold cursor-pointer transition-colors hover:bg-gray-700 disabled:opacity-60 disabled:cursor-not-allowed"
+            onClick={onClose} 
+            disabled={isImporting && progress?.status === 'Processing'}
+          >
             {isImporting && progress?.status === 'Processing' ? 'Importando...' : 'Cerrar'}
           </button>
         </div>
@@ -225,4 +278,3 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onCom
     </div>
   );
 };
-

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { LoginRequest } from '../types';
-import './Login.css';
 
 export const Login: React.FC = () => {
   const [credentials, setCredentials] = useState<LoginRequest>({
@@ -38,16 +37,22 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1>ServerCloudStore</h1>
-        <h2>Iniciar Sesión</h2>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2]">
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+        <h1 className="text-center text-[#667eea] mb-2 text-3xl font-bold">ServerCloudStore</h1>
+        <h2 className="text-center text-gray-900 mb-6 text-2xl">Iniciar Sesión</h2>
         
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="bg-red-50 text-red-700 px-3 py-3 rounded-md mb-4 border border-red-200">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Usuario</label>
+          <div className="mb-6">
+            <label htmlFor="username" className="block mb-2 text-gray-700 font-medium">
+              Usuario
+            </label>
             <input
               type="text"
               id="username"
@@ -57,11 +62,14 @@ export const Login: React.FC = () => {
               required
               disabled={isLoading}
               placeholder="admin"
+              className="w-full px-3 py-3 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-[#667eea] disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+          <div className="mb-6">
+            <label htmlFor="password" className="block mb-2 text-gray-700 font-medium">
+              Contraseña
+            </label>
             <input
               type="password"
               id="password"
@@ -71,21 +79,27 @@ export const Login: React.FC = () => {
               required
               disabled={isLoading}
               placeholder="admin123"
+              className="w-full px-3 py-3 border border-gray-300 rounded-md text-base transition-colors focus:outline-none focus:border-[#667eea] disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
           </div>
 
-          <button type="submit" className="btn-primary" disabled={isLoading}>
+          <button 
+            type="submit" 
+            className="w-full px-3 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-none rounded-md text-base font-semibold cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
             {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </button>
         </form>
 
-        <div className="login-info">
-          <p><strong>Usuario de prueba:</strong></p>
-          <p>Usuario: admin</p>
-          <p>Contraseña: admin123</p>
+        <div className="mt-6 p-4 bg-gray-50 rounded-md text-sm">
+          <p className="my-1 text-gray-600">
+            <strong className="text-gray-900">Usuario de prueba:</strong>
+          </p>
+          <p className="my-1 text-gray-600">Usuario: admin</p>
+          <p className="my-1 text-gray-600">Contraseña: admin123</p>
         </div>
       </div>
     </div>
   );
 };
-

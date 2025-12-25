@@ -2,11 +2,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using ServerCloudStore.Application.DTOs.Auth;
-using ServerCloudStore.Application.Mappers;
 using ServerCloudStore.Domain.Services;
 using ServerCloudStore.Transversal.Common;
 
@@ -20,15 +20,18 @@ public class AuthService : IAuthService
     private readonly IAuthDomainService _authDomainService;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
+    private readonly IMapper _mapper;
 
     public AuthService(
         IAuthDomainService authDomainService,
         IConfiguration configuration,
-        ILogger<AuthService> logger)
+        ILogger<AuthService> logger,
+        IMapper mapper)
     {
         _authDomainService = authDomainService;
         _configuration = configuration;
         _logger = logger;
+        _mapper = mapper;
     }
 
     /// <summary>
@@ -52,7 +55,7 @@ public class AuthService : IAuthService
                 _configuration.GetValue<int>("JwtSettings:ExpirationMinutes", 60));
 
             // Mapear usuario a DTO
-            var userDto = AuthMapper.MapToUserDto(user);
+            var userDto = _mapper.Map<UserDto>(user);
 
             var response = new LoginResponseDto
             {
