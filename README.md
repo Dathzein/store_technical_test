@@ -248,7 +248,7 @@ store_technical_test/
 ```json
 {
   "username": "admin",
-  "password": "admin123"
+  "password": "admin123!"
 }
 ```
 
@@ -567,25 +567,6 @@ docker-compose --profile testing up frontend-tests
 - ✅ Generación de reportes HTML
 - ✅ Extracción de resultados y coverage
 
-<<<<<<< HEAD
-=======
-### Estructura de Archivos de Testing
-
-```
-├── run-tests-frontend.sh       # Script de tests de frontend
-├── Dockerfile.Test             # Dockerfile de tests de backend
-├── Dockerfile.Frontend.Test    # Dockerfile de tests de frontend
-└── TestResults/
-    ├── Backend/
-    │   └── coveragereport/
-    │       └── index.html      # Reporte de cobertura backend
-    └── Frontend/
-        └── coverage/
-            └── lcov-report/
-                └── index.html  # Reporte de cobertura frontend
-```
-
->>>>>>> 45a1115e40a461259b3bca7cce7caa1dabcb681c
 ## 🐳 Docker
 
 ### Construcción de Imágenes
