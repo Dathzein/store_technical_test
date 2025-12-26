@@ -122,7 +122,7 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
 
 ```bash
 # 1. Clonar el repositorio
-git clone <repository-url>
+git clone https://github.com/Dathzein/store_technical_test.git
 cd finanzauto
 
 # 2. Levantar todos los servicios
