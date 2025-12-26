@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance, type AxiosError } from 'axios';
+import type { Response } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -27,14 +28,28 @@ apiClient.interceptors.request.use(
 // Response interceptor to handle errors globally
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+  (error: AxiosError<Response<any>>) => {
+    // Extraer mensaje de error del formato Response<T> del backend
+    const errorMessage = error.response?.data?.message || 'Error en la comunicación con el servidor';
+    const errorCode = error.response?.data?.code || error.response?.status || 500;
+    
+    if (errorCode === 401) {
+      const currentPath = window.location.pathname;
+      
+      // Solo redirigir si no estamos en la página de login y hay un token inválido
+      if (currentPath !== '/login' && localStorage.getItem('token')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
-    return Promise.reject(error);
+    
+    // Crear un error mejorado con el mensaje del backend
+    const enhancedError = new Error(errorMessage);
+    (enhancedError as any).code = errorCode;
+    (enhancedError as any).response = error.response;
+    
+    return Promise.reject(enhancedError);
   }
 );
 
