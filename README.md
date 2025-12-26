@@ -38,6 +38,7 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
 - ✅ **Paginación**: Listado paginado de productos
 - ✅ **Carga Masiva**: Modal con progreso en tiempo real vía SignalR
 - ✅ **UI/UX Moderna**: Diseño responsivo y atractivo
+- ✅ **Testing Completo**: 74 tests con 95% de cobertura (Vitest + RTL + MSW)
 
 ## 🏗️ Arquitectura
 
@@ -100,14 +101,21 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
 - **React Router**: Enrutamiento
 - **Axios**: Cliente HTTP
 - **SignalR Client**: WebSocket client
-- **React Hook Form**: Gestión de formularios
-- **Zod**: Validación de schemas
+- **Tailwind CSS**: Framework CSS utility-first
+
+#### Testing
+- **Vitest**: Framework de testing
+- **React Testing Library**: Testing de componentes
+- **MSW**: Mock Service Worker
+- **happy-dom**: Entorno DOM
+- **Coverage v8**: Reporte de cobertura
 
 ### DevOps
 - **Docker**: Containerización
 - **Docker Compose**: Orquestación local
-- **GitHub Actions**: CI/CD
+- **GitHub Actions**: CI/CD pipeline completo
 - **Nginx**: Servidor web para frontend
+- **Codecov**: Análisis de cobertura de código
 
 ## 📦 Requisitos Previos
 
@@ -196,20 +204,36 @@ finanzauto/
 │   └── Services/                       # Servicios de infraestructura
 ├── ServerCloudStore.Transversal/        # Capa transversal
 │   └── Common/                         # Response<T>, utilidades comunes
-├── ServerCloudStore.Tests.Unit/         # Tests unitarios
-├── ServerCloudStore.Tests.Integration/  # Tests de integración
+├── ServerCloudStore.Tests.Unit/         # Tests unitarios backend
+├── ServerCloudStore.Tests.Integration/  # Tests de integración backend
 ├── frontend/                            # Aplicación React
 │   ├── src/
+│   │   ├── __tests__/                  # Tests de App (3 tests)
 │   │   ├── components/                 # Componentes reutilizables
+│   │   │   └── __tests__/              # Tests (7 tests)
 │   │   ├── pages/                      # Páginas/vistas
+│   │   │   └── __tests__/              # Tests (21 tests)
 │   │   ├── services/                   # Servicios API
-│   │   ├── context/                    # Context API
+│   │   │   └── __tests__/              # Tests (39 tests)
 │   │   ├── guards/                     # Guards de rutas
+│   │   │   └── __tests__/              # Tests (4 tests)
+│   │   ├── context/                    # Context API
+│   │   ├── mocks/                      # MSW mocks para testing
+│   │   ├── test/                       # Utilidades de testing
 │   │   └── types/                      # Tipos TypeScript
+│   ├── coverage/                       # Reportes de cobertura (generado)
+│   ├── TESTING.md                      # Documentación de tests
 │   └── package.json
+├── .github/
+│   └── workflows/
+│       └── ci.yml                      # CI/CD pipeline completo
 ├── docker-compose.yml                   # Orquestación Docker
 ├── Dockerfile.backend                   # Dockerfile del backend
-└── Dockerfile.frontend                  # Dockerfile del frontend
+├── Dockerfile.frontend                  # Dockerfile del frontend
+├── Dockerfile.Test                      # Dockerfile tests backend
+├── Dockerfile.Frontend.Test             # Dockerfile tests frontend
+├── run-tests.sh                         # Script tests backend
+└── run-tests-frontend.sh                # Script tests frontend
 ```
 
 ## 🔌 API Endpoints
@@ -307,33 +331,38 @@ finanzauto/
 
 ## 🧪 Testing
 
-El proyecto incluye tests unitarios e integración completos con cobertura de código superior al 92%.
+El proyecto incluye tests completos tanto en backend como en frontend con excelente cobertura de código.
 
-### Resumen de Tests
+### Resumen Global de Tests
 
-**Tests Unitarios: 45 tests**
+**Backend: 45+ tests unitarios y de integración (92%+ cobertura)**
 - ✅ 4 tests de AuthService
 - ✅ 9 tests de ProductService  
 - ✅ 7 tests de CategoryService
 - ✅ 5 tests de BulkImportService
-- ✅ 3 tests de Validadores (LoginRequest, CreateProduct, CreateCategory)
-- ✅ 4 tests de Entidades (Product, Category, User)
-- ✅ 4 tests de Response<T>
+- ✅ 3 tests de Validadores
+- ✅ 4 tests de Entidades
+- ✅ Tests de Integración de Controllers
 
-**Tests de Integración: Disponibles**
-- ✅ AuthController (5 tests)
-- ✅ ProductController (7 tests)
-- ✅ CategoryController (6 tests)
-- ✅ BulkImportController (5 tests)
+**Frontend: 74 tests (95.08% cobertura)**
+- ✅ 39 tests de Services
+- ✅ 21 tests de Pages
+- ✅ 7 tests de Components
+- ✅ 4 tests de Guards
+- ✅ 3 tests de App
 
 ### Ejecución Rápida
 
 ```bash
-# Script automatizado con reporte de cobertura
+# Tests de Backend
 ./run-tests.sh
 
+# Tests de Frontend
+./run-tests-frontend.sh
+
 # O manualmente:
-dotnet test
+dotnet test                    # Backend
+cd frontend && npm test        # Frontend
 ```
 
 ### Tests Unitarios
@@ -411,6 +440,7 @@ El Dockerfile.Test ejecuta:
 
 ### Estructura de Tests
 
+#### Backend
 ```
 ServerCloudStore.Tests.Unit/
 ├── Services/                    # Tests de servicios
@@ -434,6 +464,108 @@ ServerCloudStore.Tests.Integration/
     ├── CategoryControllerIntegrationTests.cs
     └── BulkImportControllerIntegrationTests.cs
 ```
+
+#### Frontend
+```
+frontend/src/
+├── __tests__/                   # Tests de App
+│   └── App.test.tsx
+├── services/__tests__/          # Tests de servicios (39 tests)
+│   ├── authService.test.ts      # 13 tests
+│   ├── productService.test.ts   # 8 tests
+│   ├── categoryService.test.ts  # 10 tests
+│   └── bulkImportService.test.ts # 8 tests
+├── pages/__tests__/             # Tests de páginas (21 tests)
+│   ├── Login.test.tsx           # 5 tests
+│   ├── ProductList.test.tsx     # 13 tests
+│   └── ProductDetail.test.tsx   # 3 tests
+├── components/__tests__/        # Tests de componentes (7 tests)
+│   └── Layout.test.tsx
+├── guards/__tests__/            # Tests de guards (4 tests)
+│   └── AuthGuard.test.tsx
+├── mocks/                       # MSW handlers y mocks
+│   ├── handlers.ts              # Handlers de API
+│   ├── server.ts                # Configuración MSW
+│   └── signalr.ts               # Mock SignalR
+└── test/                        # Utilidades de testing
+    ├── setup.ts                 # Configuración global
+    └── utils.tsx                # Helpers y factories
+```
+
+**Cobertura por Categoría:**
+- Services: 97.16% ✅
+- Pages: 86.34% ✅
+- Components: 100% ✅
+- Guards: 100% ✅
+- Context: 82.22% ✅
+- App: 100% ✅
+
+**Total: 74 tests con 95.08% de cobertura**
+
+### Tests de Frontend
+
+El frontend incluye **tests completos con Vitest, React Testing Library y MSW** alcanzando una **cobertura del 95%**:
+
+```bash
+# Ejecutar tests de frontend
+cd frontend
+npm test
+
+# Tests con cobertura
+npm run test:coverage
+
+# Tests con UI interactiva
+npm run test:ui
+
+# Script bash con reporte completo
+./run-tests-frontend.sh
+```
+
+**Stack de Testing Frontend:**
+- ✅ **Vitest v2.1.9**: Framework de testing moderno
+- ✅ **React Testing Library**: Testing de componentes
+- ✅ **MSW v2.12.4**: Mock Service Worker para APIs
+- ✅ **happy-dom**: Entorno DOM optimizado
+- ✅ **Coverage v8**: Cobertura de código rápida
+
+**Resultados de Cobertura:**
+- ✅ Lines: **95.08%** (objetivo: 80%)
+- ✅ Functions: **85.71%** (objetivo: 80%)
+- ✅ Branches: **92.43%** (objetivo: 75%)
+- ✅ Statements: **95.08%** (objetivo: 80%)
+
+**Tests Implementados: 74 tests**
+- ✅ Services: 39 tests (authService, productService, categoryService, bulkImportService)
+- ✅ Pages: 21 tests (Login, ProductList, ProductDetail)
+- ✅ Components: 7 tests (Layout)
+- ✅ Guards: 4 tests (AuthGuard)
+- ✅ App: 3 tests (routing y configuración)
+
+### Tests con Docker
+
+Ambos backend y frontend tienen Dockerfiles especializados para ejecutar tests en entornos aislados:
+
+```bash
+# Tests de backend en Docker
+docker build -f Dockerfile.Test -t backend-tests .
+docker run --rm -v $(pwd)/TestResults:/app/TestResults backend-tests
+
+# Tests de frontend en Docker
+docker build -f Dockerfile.Frontend.Test -t frontend-tests .
+docker run --rm -v $(pwd)/TestResults/Frontend:/testresults frontend-tests
+
+# Con docker-compose (profile testing)
+docker-compose --profile testing up backend-tests
+docker-compose --profile testing up frontend-tests
+```
+
+**Características de los Dockerfiles de Test:**
+- ✅ Entorno aislado y reproducible
+- ✅ Ejecución de linter (frontend)
+- ✅ Tests unitarios con cobertura
+- ✅ Tests de integración (backend)
+- ✅ Generación de reportes HTML
+- ✅ Extracción de resultados y coverage
 
 ## 🐳 Docker
 
@@ -468,6 +600,124 @@ docker-compose down -v
 - **postgres**: Base de datos PostgreSQL (puerto 5432)
 - **backend**: API .NET (puerto 5000)
 - **frontend**: React App (puerto 3000)
+
+## 🔄 CI/CD Pipeline
+
+El proyecto incluye un pipeline completo de CI/CD con GitHub Actions que ejecuta automáticamente en cada push o pull request.
+
+### Pipeline Completo
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   GitHub Actions CI/CD                   │
+└─────────────────────────────────────────────────────────┘
+                           │
+            ┌──────────────┴──────────────┐
+            ▼                             ▼
+    ┌───────────────┐           ┌───────────────┐
+    │ Build Backend │           │ Build Frontend│
+    │  - Restore    │           │  - Install    │
+    │  - Build      │           │  - Lint       │
+    │  - Test       │           │  - Test       │
+    │  - Coverage   │           │  - Coverage   │
+    └───────┬───────┘           └───────┬───────┘
+            │                           │
+            ▼                           ▼
+    ┌───────────────┐           ┌───────────────┐
+    │ Docker Tests  │           │ Docker Tests  │
+    │  Backend      │           │  Frontend     │
+    └───────┬───────┘           └───────┬───────┘
+            │                           │
+            ▼                           ▼
+    ┌───────────────┐           ┌───────────────┐
+    │ Build Docker  │           │ Build Docker  │
+    │  Image        │           │  Image        │
+    └───────┬───────┘           └───────┬───────┘
+            │                           │
+            └──────────────┬────────────┘
+                           ▼
+                  ┌─────────────────┐
+                  │ Integration     │
+                  │ Tests           │
+                  └─────────────────┘
+```
+
+### Jobs del Pipeline
+
+#### 1. Build and Test Backend
+- ✅ Checkout del código
+- ✅ Setup de .NET 8
+- ✅ Restaurar dependencias
+- ✅ Build en modo Release
+- ✅ Ejecutar tests con cobertura
+- ✅ Subir reportes a Codecov
+
+#### 2. Build and Test Frontend
+- ✅ Checkout del código
+- ✅ Setup de Node.js 20
+- ✅ Instalar dependencias (npm ci)
+- ✅ Ejecutar linter
+- ✅ Ejecutar tests con cobertura
+- ✅ Subir resultados de tests
+- ✅ Subir reportes a Codecov
+- ✅ Generar resumen de cobertura
+- ✅ Comentar en PR con cobertura
+- ✅ Verificar umbrales de cobertura (80%)
+- ✅ Build de producción
+
+#### 3. Docker Test Backend
+- ✅ Build de imagen de test (Dockerfile.Test)
+- ✅ Ejecutar tests en contenedor
+- ✅ Extraer resultados y coverage
+- ✅ Subir a Codecov
+
+#### 4. Docker Build Backend
+- ✅ Build de imagen de producción
+- ✅ Cache con GitHub Actions
+
+#### 5. Docker Test Frontend
+- ✅ Build de imagen de test (Dockerfile.Frontend.Test)
+- ✅ Ejecutar tests en contenedor
+- ✅ Extraer resultados
+
+#### 6. Docker Build Frontend
+- ✅ Build de imagen de producción
+- ✅ Cache con GitHub Actions
+
+#### 7. Integration Tests
+- ✅ Levantar PostgreSQL en Docker
+- ✅ Ejecutar tests de integración
+- ✅ Limpiar recursos
+
+### Archivos de CI/CD
+
+```
+.github/workflows/
+└── ci.yml                  # Pipeline completo (backend + frontend + integration)
+```
+
+### Quality Gates
+
+El pipeline falla si:
+- ❌ Tests unitarios fallan
+- ❌ Tests de integración fallan
+- ❌ Cobertura < 80% (frontend)
+- ❌ Linter encuentra errores
+- ❌ Build de Docker falla
+
+### Ver Resultados
+
+Los resultados se pueden ver en:
+- **GitHub Actions**: Tab "Actions" del repositorio
+- **Codecov**: Reportes detallados de cobertura
+- **Pull Requests**: Comentarios automáticos con cobertura
+
+### Badges Disponibles
+
+```markdown
+![CI/CD](https://github.com/usuario/repo/workflows/CI%2FCD%20Pipeline/badge.svg)
+![Coverage](https://codecov.io/gh/usuario/repo/branch/main/graph/badge.svg)
+```
 
 ## 📊 Escalabilidad
 

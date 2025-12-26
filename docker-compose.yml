@@ -66,6 +66,19 @@ services:
       timeout: 10s
       retries: 3
 
+  frontend-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.Frontend.Test
+      target: final
+    container_name: servercloudstore-frontend-tests
+    volumes:
+      - ./TestResults/Frontend:/testresults
+    networks:
+      - servercloudstore-network
+    profiles:
+      - testing
+
 networks:
   servercloudstore-network:
     driver: bridge
