@@ -131,7 +131,7 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/Dathzein/store_technical_test.git
-cd finanzauto
+cd store_technical_test
 
 # 2. Levantar todos los servicios
 docker-compose up -d
@@ -181,7 +181,7 @@ npm run dev
 ## 📁 Estructura del Proyecto
 
 ```
-finanzauto/
+store_technical_test/
 ├── ServerCloudStore.API/                # Capa de presentación
 │   ├── Controllers/                     # Endpoints REST
 │   ├── Hubs/                           # SignalR hubs
@@ -567,6 +567,25 @@ docker-compose --profile testing up frontend-tests
 - ✅ Generación de reportes HTML
 - ✅ Extracción de resultados y coverage
 
+<<<<<<< HEAD
+=======
+### Estructura de Archivos de Testing
+
+```
+├── run-tests-frontend.sh       # Script de tests de frontend
+├── Dockerfile.Test             # Dockerfile de tests de backend
+├── Dockerfile.Frontend.Test    # Dockerfile de tests de frontend
+└── TestResults/
+    ├── Backend/
+    │   └── coveragereport/
+    │       └── index.html      # Reporte de cobertura backend
+    └── Frontend/
+        └── coverage/
+            └── lcov-report/
+                └── index.html  # Reporte de cobertura frontend
+```
+
+>>>>>>> 45a1115e40a461259b3bca7cce7caa1dabcb681c
 ## 🐳 Docker
 
 ### Construcción de Imágenes

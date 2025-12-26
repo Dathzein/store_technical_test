@@ -1,0 +1,12 @@
+name,description,price,stock,categoryId
+Servidor Dell PowerEdge R750,Servidor de alto rendimiento con procesadores Intel Xeon Scalable,5499.99,25,1
+Servidor HP ProLiant DL380 Gen10,Servidor empresarial de 2U con gestión iLO5,4899.99,30,1
+AWS EC2 t3.medium - 1 Año,Instancia EC2 optimizada para cargas de trabajo generales,450.00,999,2
+Azure Virtual Machine D2s v4,Máquina virtual con 2 vCPUs y 8 GB RAM,380.00,999,2
+Servidor IBM Power System S922,Servidor UNIX de alto rendimiento para aplicaciones críticas,8999.99,15,1
+Google Cloud Compute Engine n2-standard-4,Instancia con 4 vCPUs y 16 GB RAM,520.00,999,2
+Servidor Lenovo ThinkSystem SR650,Servidor 2U con hasta 28 núcleos por procesador,6299.99,20,1
+AWS EC2 c5.xlarge - 1 Año,Instancia optimizada para cómputo intensivo,890.00,999,2
+Servidor Cisco UCS C240 M5,Servidor rack de alto rendimiento para aplicaciones empresariales,7499.99,12,1
+Microsoft Azure B2s - 1 Año,Máquina virtual económica para cargas de trabajo ligeras,180.00,999,2
+
