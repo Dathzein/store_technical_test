@@ -136,13 +136,6 @@ describe('Login', () => {
     expect(submitButton).not.toBeDisabled()
   })
 
-  it('debería mostrar información de usuario de prueba', () => {
-    render(<Login />)
-
-    expect(screen.getByText(/usuario de prueba/i)).toBeInTheDocument()
-    expect(screen.getByText('Usuario: admin')).toBeInTheDocument()
-    expect(screen.getByText('Contraseña: admin123')).toBeInTheDocument()
-  })
 
   it('debería aplicar estilos de error a los campos con validación fallida', async () => {
     const user = userEvent.setup()

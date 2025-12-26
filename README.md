@@ -862,18 +862,6 @@ services:
 - **Performance**: Cachea las configuraciones de mapeo
 - **Reducción de código**: Menos mappers manuales y repetitivos
 
-## 👤 Credenciales de Prueba
-
-### Usuario Admin
-- **Usuario:** `admin`
-- **Contraseña:** `admin123`
-- **Permisos:** ReadProducts, WriteProducts
-
-### Usuario Regular (si existe)
-- **Usuario:** `user`
-- **Contraseña:** `user123`
-- **Permisos:** ReadProducts
-
 ## 📝 Variables de Entorno
 
 ### Backend (appsettings.json)
