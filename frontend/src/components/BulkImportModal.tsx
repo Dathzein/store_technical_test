@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { bulkImportService } from '../services/bulkImportService';
 import type { BulkImportStatusDto } from '../types';
@@ -19,17 +19,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onCom
   const connectionRef = useRef<signalR.HubConnection | null>(null);
   const currentJobIdRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    setupSignalR();
-
-    return () => {
-      if (connectionRef.current) {
-        connectionRef.current.stop();
-      }
-    };
-  }, []);
-
-  const setupSignalR = async () => {
+  const setupSignalR = useCallback(async () => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
     const token = localStorage.getItem('token');
 
@@ -61,7 +51,17 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onCom
     } catch (err) {
       console.error('Error connecting to SignalR:', err);
     }
-  };
+  }, [onComplete]);
+
+  useEffect(() => {
+    setupSignalR();
+
+    return () => {
+      if (connectionRef.current) {
+        connectionRef.current.stop();
+      }
+    };
+  }, [setupSignalR]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
