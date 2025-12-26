@@ -232,6 +232,7 @@ finanzauto/
 ├── Dockerfile.frontend                  # Dockerfile del frontend
 ├── Dockerfile.Test                      # Dockerfile tests backend
 ├── Dockerfile.Frontend.Test             # Dockerfile tests frontend
+├── run-all-tests.sh                     # ⭐ Script maestro (todos los tests)
 ├── run-tests.sh                         # Script tests backend
 └── run-tests-frontend.sh                # Script tests frontend
 ```
@@ -541,14 +542,63 @@ npm run test:ui
 - ✅ Guards: 4 tests (AuthGuard)
 - ✅ App: 3 tests (routing y configuración)
 
+### Scripts de Testing Disponibles
+
+#### Ejecutar Todos los Tests (Backend + Frontend)
+```bash
+# Script completo que ejecuta ambos Dockerfiles de tests
+./run-all-tests.sh
+```
+
+Este script ejecuta:
+- ✅ Tests unitarios e integración de Backend (.NET)
+- ✅ Tests unitarios de Frontend (Vitest + RTL)
+- ✅ Reportes de cobertura de ambos
+- ✅ Resumen consolidado con métricas
+- ✅ Opción para abrir reportes HTML en el navegador
+
+#### Tests Individuales
+
+**Frontend:**
+```bash
+# Tests locales
+cd frontend && npm test
+
+# Tests con cobertura
+./run-tests-frontend.sh
+```
+
+**Backend:**
+```bash
+# Tests locales
+dotnet test
+
+# Tests con Docker (aislado)
+docker build -t backend-tests -f Dockerfile.Test --target final .
+docker run --rm -v $(pwd)/TestResults/Backend:/testresults backend-tests
+```
+
 ### Tests con Docker
 
-Ambos backend y frontend tienen Dockerfiles especializados para ejecutar tests en entornos aislados:
+Los Dockerfiles especializados permiten ejecutar tests en entornos completamente aislados:
+
+**Backend (Dockerfile.Test):**
+- ✅ Multi-stage build optimizado
+- ✅ Tests unitarios con xUnit
+- ✅ Tests de integración
+- ✅ Reportes de cobertura con ReportGenerator
+- ✅ Formato Cobertura XML + HTML
+
+**Frontend (Dockerfile.Frontend.Test):**
+- ✅ Node 20 Alpine
+- ✅ Linting + Tests + Cobertura
+- ✅ Reportes en múltiples formatos
+- ✅ Coverage summary JSON
 
 ```bash
 # Tests de backend en Docker
 docker build -f Dockerfile.Test -t backend-tests .
-docker run --rm -v $(pwd)/TestResults:/app/TestResults backend-tests
+docker run --rm -v $(pwd)/TestResults/Backend:/testresults backend-tests
 
 # Tests de frontend en Docker
 docker build -f Dockerfile.Frontend.Test -t frontend-tests .
@@ -566,6 +616,23 @@ docker-compose --profile testing up frontend-tests
 - ✅ Tests de integración (backend)
 - ✅ Generación de reportes HTML
 - ✅ Extracción de resultados y coverage
+
+### Estructura de Archivos de Testing
+
+```
+├── run-all-tests.sh            # ⭐ Script maestro (Backend + Frontend)
+├── run-tests-frontend.sh       # Script de tests de frontend
+├── Dockerfile.Test             # Dockerfile de tests de backend
+├── Dockerfile.Frontend.Test    # Dockerfile de tests de frontend
+└── TestResults/
+    ├── Backend/
+    │   └── coveragereport/
+    │       └── index.html      # Reporte de cobertura backend
+    └── Frontend/
+        └── coverage/
+            └── lcov-report/
+                └── index.html  # Reporte de cobertura frontend
+```
 
 ## 🐳 Docker
 

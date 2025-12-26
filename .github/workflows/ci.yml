@@ -70,6 +70,20 @@ jobs:
         name: frontend-test-results
         path: frontend/test-results.xml
 
+    - name: Verify Coverage Files
+      if: always()
+      working-directory: ./frontend
+      run: |
+        echo "Verificando archivos de cobertura generados:"
+        ls -la coverage/ || echo "No coverage directory found"
+        if [ -f coverage/cobertura-coverage.xml ]; then
+          echo "✅ cobertura-coverage.xml encontrado"
+          head -20 coverage/cobertura-coverage.xml
+        else
+          echo "❌ cobertura-coverage.xml NO encontrado"
+          exit 1
+        fi
+
     - name: Upload Coverage Reports
       uses: codecov/codecov-action@v4
       if: always()
@@ -87,6 +101,11 @@ jobs:
         badge: true
         format: markdown
         output: both
+        fail_below_min: false
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        thresholds: '60 80'
 
     - name: Comment PR with Coverage
       uses: marocchino/sticky-pull-request-comment@v2

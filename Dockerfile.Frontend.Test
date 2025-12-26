@@ -33,7 +33,20 @@ RUN echo "Running linter..." && \
 
 # Ejecutar tests con cobertura
 RUN echo "Running tests with coverage..." && \
-    npm run test:coverage || true
+    npm run test:ci
+
+# Verificar archivos generados
+RUN echo "Verificando archivos generados:" && \
+    ls -la . && \
+    echo "" && \
+    echo "Contenido de coverage/:" && \
+    ls -la coverage/ || echo "No coverage directory" && \
+    echo "" && \
+    if [ -f coverage/cobertura-coverage.xml ]; then \
+        echo "✅ cobertura-coverage.xml encontrado"; \
+    else \
+        echo "❌ cobertura-coverage.xml NO encontrado"; \
+    fi
 
 # Crear directorio para resultados
 RUN mkdir -p /test-results
