@@ -285,11 +285,11 @@ export const handlers = [
   }),
 
   http.put(`${API_URL}/Category/:id`, async ({ params, request }) => {
-    const _id = parseInt(params.id as string)
+    const id = parseInt(params.id as string)
     const body = (await request.json()) as any
 
     const updatedCategory: CategoryDto = {
-      _id,
+      id,
       ...body,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
