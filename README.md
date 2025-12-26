@@ -232,7 +232,6 @@ store_technical_test/
 ├── Dockerfile.frontend                  # Dockerfile del frontend
 ├── Dockerfile.Test                      # Dockerfile tests backend
 ├── Dockerfile.Frontend.Test             # Dockerfile tests frontend
-├── run-all-tests.sh                     # ⭐ Script maestro (todos los tests)
 ├── run-tests.sh                         # Script tests backend
 └── run-tests-frontend.sh                # Script tests frontend
 ```
@@ -620,7 +619,6 @@ docker-compose --profile testing up frontend-tests
 ### Estructura de Archivos de Testing
 
 ```
-├── run-all-tests.sh            # ⭐ Script maestro (Backend + Frontend)
 ├── run-tests-frontend.sh       # Script de tests de frontend
 ├── Dockerfile.Test             # Dockerfile de tests de backend
 ├── Dockerfile.Frontend.Test    # Dockerfile de tests de frontend
