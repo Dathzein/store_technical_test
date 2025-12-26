@@ -176,6 +176,7 @@ jobs:
         context: .
         file: ./Dockerfile.Test
         push: false
+        load: true
         tags: servercloudstore-backend-test:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
