@@ -131,7 +131,7 @@ Sistema FullStack para gestión de productos de servidores y cloud con carga mas
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/Dathzein/store_technical_test.git
-cd finanzauto
+cd store_technical_test
 
 # 2. Levantar todos los servicios
 docker-compose up -d
@@ -181,7 +181,7 @@ npm run dev
 ## 📁 Estructura del Proyecto
 
 ```
-finanzauto/
+store_technical_test/
 ├── ServerCloudStore.API/                # Capa de presentación
 │   ├── Controllers/                     # Endpoints REST
 │   ├── Hubs/                           # SignalR hubs
