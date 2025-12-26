@@ -51,7 +51,7 @@ export const ProductForm: React.FC = () => {
           description: product.description,
           price: product.price,
           stock: product.stock,
-          categoryId: product.category.id,
+          categoryId: product.category?.id || 0,
         });
       } else {
         setError(response.message);

@@ -109,6 +109,16 @@ public class ProductService : IProductService
                 return Response<ProductDto>.Error("Producto no encontrado", 404);
             }
 
+            // Cargar categoría para el DTO
+            if (product.CategoryId > 0)
+            {
+                var category = await _categoryRepository.GetByIdAsync(product.CategoryId);
+                if (category != null)
+                {
+                    product.Category = category;
+                }
+            }
+
             var result = _mapper.Map<ProductDto>(product);
             return Response<ProductDto>.Success(result, "Producto obtenido exitosamente", 200);
         }

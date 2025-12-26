@@ -142,23 +142,29 @@ export const ProductDetail: React.FC = () => {
             <h2 className="text-[#667eea] mb-4 text-2xl border-b-2 border-[#667eea] pb-2">
               Categoría
             </h2>
-            <div className="flex gap-6 items-start p-4 bg-gray-50 rounded-lg">
-              {product.category.imageUrl && (
-                <img 
-                  src={product.category.imageUrl} 
-                  alt={product.category.name}
-                  className="w-36 h-36 object-cover rounded-lg shadow-md"
-                />
-              )}
-              <div>
-                <h3 className="text-gray-900 text-xl font-bold my-0 mb-2">
-                  {product.category.name}
-                </h3>
-                <p className="text-gray-600 m-0">
-                  {product.category.description}
-                </p>
+            {product.category ? (
+              <div className="flex gap-6 items-start p-4 bg-gray-50 rounded-lg">
+                {product.category.imageUrl && (
+                  <img 
+                    src={product.category.imageUrl} 
+                    alt={product.category.name}
+                    className="w-36 h-36 object-cover rounded-lg shadow-md"
+                  />
+                )}
+                <div>
+                  <h3 className="text-gray-900 text-xl font-bold my-0 mb-2">
+                    {product.category.name}
+                  </h3>
+                  <p className="text-gray-600 m-0">
+                    {product.category.description}
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="p-4 bg-gray-50 rounded-lg text-gray-500">
+                No hay información de categoría disponible
+              </div>
+            )}
           </div>
 
           <div className="mb-8">

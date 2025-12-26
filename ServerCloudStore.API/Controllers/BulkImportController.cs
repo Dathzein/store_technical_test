@@ -52,7 +52,12 @@ public class BulkImportController : ControllerBase
 
         if (request.CsvFile != null)
         {
-            applicationDto.CsvStream = request.CsvFile.OpenReadStream();
+            // Copiar el stream a un MemoryStream para evitar que se cierre cuando termine la petición HTTP
+            var memoryStream = new MemoryStream();
+            await request.CsvFile.CopyToAsync(memoryStream);
+            memoryStream.Position = 0; // Resetear posición para lectura
+            
+            applicationDto.CsvStream = memoryStream;
             applicationDto.CsvFileName = request.CsvFile.FileName;
         }
 

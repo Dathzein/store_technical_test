@@ -20,11 +20,12 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ onClose, onCom
   const currentJobIdRef = useRef<string | null>(null);
 
   const setupSignalR = useCallback(async () => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    // Remove /api suffix if present since SignalR hub is at root level
+    const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api').replace('/api', '');
     const token = localStorage.getItem('token');
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${API_BASE_URL}/hubs/import`, {
+      .withUrl(`${baseUrl}/hubs/import`, {
         accessTokenFactory: () => token || '',
       })
       .withAutomaticReconnect()

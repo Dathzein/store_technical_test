@@ -26,9 +26,19 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(
+                  "http://localhost:3000",
+                  "http://localhost:5173", 
+                  "http://localhost:80",
+                  "http://localhost:5000",
+                  "http://localhost:5001",
+                  "http://localhost:5292",
+                  "http://frontend:80",
+                  "https://localhost:7224"
+              )
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
@@ -93,8 +103,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Map SignalR Hub
-app.MapHub<ImportNotificationHub>("/hubs/import");
+// Map SignalR Hub with CORS
+app.MapHub<ImportNotificationHub>("/hubs/import").RequireCors("AllowAll");
 
 app.Run();
 

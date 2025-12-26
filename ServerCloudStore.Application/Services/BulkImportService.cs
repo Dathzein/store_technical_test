@@ -112,6 +112,8 @@ public class BulkImportService : IBulkImportService
     /// </summary>
     private async Task ProcessImportAsync(BulkImportJob job, BulkImportRequestDto request)
     {
+        Stream? csvStream = null;
+        
         try
         {
             job.Status = "Processing";
@@ -125,6 +127,7 @@ public class BulkImportService : IBulkImportService
             // Obtener productos según el tipo de importación
             if (request.CsvStream != null)
             {
+                csvStream = request.CsvStream; // Guardar referencia para liberar después
                 var productData = await _csvProcessor.ParseCsvAsync(request.CsvStream);
                 products = productData.Select(p => new Product
                 {
@@ -223,6 +226,14 @@ public class BulkImportService : IBulkImportService
             job.ErrorMessage = ex.Message;
             await _jobRepository.UpdateAsync(job);
             await NotifyProgressAsync(job);
+        }
+        finally
+        {
+            // Liberar recursos del stream
+            if (csvStream != null)
+            {
+                await csvStream.DisposeAsync();
+            }
         }
     }
 

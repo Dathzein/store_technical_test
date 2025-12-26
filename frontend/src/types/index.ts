@@ -39,7 +39,8 @@ export interface ProductDto {
   description: string;
   price: number;
   stock: number;
-  category: CategoryDto;
+  category?: CategoryDto;
+  categoryId?: number;
   createdAt: string;
   updatedAt: string;
 }
