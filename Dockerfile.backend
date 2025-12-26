@@ -29,6 +29,9 @@ EXPOSE 8081
 # Copy published files
 COPY --from=publish /app/publish .
 
+# Copy SQL scripts
+COPY ServerCloudStore.Infrastructure/Scripts /app/Scripts
+
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production

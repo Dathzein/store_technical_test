@@ -244,11 +244,22 @@ store_technical_test/
 |--------|----------|-------------|------|
 | POST | `/api/Auth/login` | Iniciar sesión | No |
 
+**Usarios de pruebas:**
+
+Admin:
+- Usuario: admin
+- Contraseña: Admin123!
+
+Usuario normal:
+- Usuario: user
+- Contraseña: User123!
+
+
 **Request Body:**
 ```json
 {
   "username": "admin",
-  "password": "admin123!"
+  "password": "Admin123!"
 }
 ```
 

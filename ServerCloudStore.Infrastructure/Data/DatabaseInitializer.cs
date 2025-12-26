@@ -117,30 +117,20 @@ public class DatabaseInitializer
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        // Dividir el script en comandos individuales (separados por ;)
-        var commands = scriptContent
-            .Split(';', StringSplitOptions.RemoveEmptyEntries)
-            .Select(c => c.Trim())
-            .Where(c => !string.IsNullOrWhiteSpace(c) && !c.StartsWith("--"));
-
-        foreach (var commandText in commands)
+        try
         {
-            if (string.IsNullOrWhiteSpace(commandText))
-                continue;
-
-            try
-            {
-                await using var command = new NpgsqlCommand(commandText, connection);
-                await command.ExecuteNonQueryAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, $"Error al ejecutar comando del script {scriptFileName}. Continuando...");
-                // Continuar con el siguiente comando
-            }
+            // Ejecutar todo el script de una vez
+            await using var command = new NpgsqlCommand(scriptContent, connection);
+            command.CommandTimeout = 120; // Timeout de 2 minutos
+            await command.ExecuteNonQueryAsync();
+            
+            _logger.LogInformation($"Script {scriptFileName} ejecutado correctamente.");
         }
-
-        _logger.LogInformation($"Script {scriptFileName} ejecutado correctamente.");
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error al ejecutar script {scriptFileName}.");
+            throw;
+        }
     }
 }
 
