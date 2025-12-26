@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { categoryService } from '../categoryService'
 import { server } from '../../mocks/server'
 import { http, HttpResponse } from 'msw'
-import type { Response, CategoryDto, CreateCategoryDto, UpdateCategoryDto } from '../../types'
+import type { CreateCategoryDto, UpdateCategoryDto } from '../../types'
 
 describe('categoryService', () => {
   beforeEach(() => {

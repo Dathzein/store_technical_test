@@ -1,9 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { ProductDetail } from '../ProductDetail'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { server } from '../../mocks/server'
-import { http, HttpResponse } from 'msw'
+import { BrowserRouter } from 'react-router-dom'
 
 // Mock de useNavigate y useParams
 const mockNavigate = vi.fn()

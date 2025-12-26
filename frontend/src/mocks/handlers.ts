@@ -140,8 +140,8 @@ export const handlers = [
   }),
 
   http.get(`${API_URL}/Product/:id`, ({ params }) => {
-    const id = parseInt(params.id as string)
-    const product = mockProducts.find((p) => p.id === id)
+    const _id = parseInt(params.id as string)
+    const product = mockProducts.find((p) => p.id === _id)
 
     if (product) {
       const detailedProduct: ProductDto = {
@@ -194,11 +194,11 @@ export const handlers = [
   }),
 
   http.put(`${API_URL}/Product/:id`, async ({ params, request }) => {
-    const id = parseInt(params.id as string)
+    const _id = parseInt(params.id as string)
     const body = (await request.json()) as any
 
     const updatedProduct: ProductDto = {
-      id,
+      _id,
       ...body,
       category: mockCategories.find((c) => c.id === body.categoryId)!,
       createdAt: new Date().toISOString(),
@@ -215,9 +215,7 @@ export const handlers = [
     return HttpResponse.json(response)
   }),
 
-  http.delete(`${API_URL}/Product/:id`, ({ params }) => {
-    const id = parseInt(params.id as string)
-
+  http.delete(`${API_URL}/Product/:id`, () => {
     const response: Response<void> = {
       data: undefined as any,
       code: 200,
@@ -241,8 +239,8 @@ export const handlers = [
   }),
 
   http.get(`${API_URL}/Category/:id`, ({ params }) => {
-    const id = parseInt(params.id as string)
-    const category = mockCategories.find((c) => c.id === id)
+    const _id = parseInt(params.id as string)
+    const category = mockCategories.find((c) => c.id === _id)
 
     if (category) {
       const response: Response<CategoryDto> = {
@@ -287,11 +285,11 @@ export const handlers = [
   }),
 
   http.put(`${API_URL}/Category/:id`, async ({ params, request }) => {
-    const id = parseInt(params.id as string)
+    const _id = parseInt(params.id as string)
     const body = (await request.json()) as any
 
     const updatedCategory: CategoryDto = {
-      id,
+      _id,
       ...body,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -307,9 +305,7 @@ export const handlers = [
     return HttpResponse.json(response)
   }),
 
-  http.delete(`${API_URL}/Category/:id`, ({ params }) => {
-    const id = parseInt(params.id as string)
-
+  http.delete(`${API_URL}/Category/:id`, () => {
     const response: Response<boolean> = {
       data: true,
       code: 200,
