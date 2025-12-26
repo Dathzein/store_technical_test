@@ -129,13 +129,13 @@ export const Login: React.FC = () => {
           </button>
         </form>
 
-        <div className="mt-6 p-4 bg-gray-50 rounded-md text-sm">
+        {/* <div className="mt-6 p-4 bg-gray-50 rounded-md text-sm">
           <p className="my-1 text-gray-600">
             <strong className="text-gray-900">Usuario de prueba:</strong>
           </p>
           <p className="my-1 text-gray-600">Usuario: admin</p>
           <p className="my-1 text-gray-600">Contraseña: admin123</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
